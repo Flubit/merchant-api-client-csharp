@@ -99,11 +99,22 @@ namespace FlubitMerchantApiClient
             var request = (HttpWebRequest)WebRequest.Create(string.Format("http://{0}/1/{1}{2}", _domain, uri, BuildQueryParams(parameters)));
             request.Method = "POST";
             request.Accept = "application/xml";
+            
             if (xml != null)
             {
-                var stream = request.GetRequestStream();
-                xml.Save(stream);
-                stream.Flush();
+                Stream stream;
+                try
+                {
+                    stream = request.GetRequestStream();
+                    xml.Save(stream);
+                    stream.Flush();
+                }
+                catch(Exception e){}
+                finally
+                {
+                    if (stream != null)
+                        stream.Close();
+                }
             }
             return HandleRequest(request);
         }
